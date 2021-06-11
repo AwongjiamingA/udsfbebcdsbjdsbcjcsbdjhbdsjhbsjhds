@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="UTF-8" /> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" /> 
+  <meta name="referrer" content="never" /> 
+  <title>云解析</title> 
+  <style type="text/css">body,html,.dplayer{padding:0;margin:0;width:100%;height:100%;background-color:#000}a{text-decoration:none}</style> 
+ </head> 
+<style>
+.box{ width: 250px;height:250px;margin-top: -125px;margin-left: -125px;position: absolute;display: none;top: 0px;left: 50%;top:50%}
+.close{ width:49px; height:20px; background:url(close.png) no-repeat; position:absolute; top:0; right:0; cursor:pointer;}
+</style>
+ <body>
+<link rel="stylesheet" href="DPlayer.min.css">
+<div id="dplayer"></div>
+<div class="box" id="adbox">
+	<!---div class="ad"><a href="https://www.458kq.com/wang31.htm" target="_blank"><img src="https://cbu01.alicdn.com/img/ibank/2018/755/442/9460244557_1746120392.jpg" /></a></div>
+	<div class="close" onclick="document.getElementById('adbox').remove();"></div--->
+</div>
+<script src="cdnbye.js"></script>
+<script src="latest.js"></script>
+<script>
+	function getQueryString(name) {  
+		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");  
+		var r = window.location.search.substr(1).match(reg);  
+		if (r != null) return decodeURI(r[2]);  
+		return null;  
+	}
+    var m3u8url = ''+getQueryString('id')+'';
+	var auto = getQueryString('auto');
+	
+	if(auto=="0"){
+		autoplay = false;
+	}else{
+		autoplay = true;
+	}
+    var hlsjsConfig = {
+        debug: false,
+        maxBufferHole: 3,
+        p2pConfig: {
+            logLevel: 'warn',
+			announce: "https://tracker.cdnpan.com",
+            wsSignalerAddr: 'wss://free.freesignal.net/',
+        }
+    };
+	
+    var hls;
+	var isMobile = navigator.userAgent.match(/iPad|iPhone|Linux|Android|iPod/i) != null;
+    var dp = new DPlayer({
+        container: document.getElementById('dplayer'),
+        autoplay:isMobile,
+        loop:true,
+        screenshot:true,
+        hotkey:true,
+        preload:'auto',
+        video: {
+            url: m3u8url,
+            type: 'customHls',
+            customType: {
+                'customHls': function (video, player) {
+                    if (isMobile) {
+                        var html = '<video src="'+video.src+'" controls="controls" autoplay="autoplay" width="100%" height="100%"></video>';
+                        document.getElementById('dplayer').innerHTML = html;
+                    }else{
+                        hls = new Hls(hlsjsConfig);
+                        hls.loadSource(video.src);
+                        hls.attachMedia(video);
+                    }
+                }
+            }
+        }
+    });
+	if(!isMobile){
+		document.getElementById('adbox').style.display = 'block';
+		setTimeout(function(){
+			if(autoplay){
+				dp.play();
+			}
+			document.getElementById('adbox').style.display = 'none';
+		},10*1000)
+	}
+</script>
+</body>
+</html>
+
+<!----------------------------------------------------
+
+
+http://116.199.5.51:8114/00000000/hls/index.m3u8?Fsv_chan_hls_se_idx=160&FvSeid=1&Fsv_ctype=LIVES&Fsv_otype=1&Provider_id=&Pcontent_id=.m3u8
+http://weblive.hebtv.com/live/hbws_bq/index.m3u8
+
+var m3u8url = 'https://m3u8.cdnpan.com/'+getQueryString('id')+'.m3u8';
+
+var m3u8url = 'http://weblive.hebtv.com/live/'+getQueryString('id')+'index.m3u8';
+
+
+?id=hbws_bq
+
+
+
+------------------------------------->
